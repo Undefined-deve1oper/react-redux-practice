@@ -1,27 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import {Provider} from "react-redux";
-import configureStore from "./store/store";
 import { completeTask, getTasks, taskDeleted, titleChanged } from "./store/task";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import configureStore from "./store/store";
 
 const store = configureStore();
 
 const App = () => {
-    const [state, setState] = useState( store.getState() );
+    const state = useSelector( ( state ) => state.entities );
+    const isLoading = useSelector( ( state ) => state.isLoading );
+    const error = useSelector( ( state ) => state.error );
+    const dispatch = useDispatch();
 
     useEffect( () => {
-        store.dispatch(getTasks());
-        store.subscribe( () => {
-            setState( store.getState() );
-        } );
+        dispatch( getTasks() );
     }, [] );
 
     const changeTitle = ( taskId ) => {
-        store.dispatch( titleChanged( taskId ) );
+        dispatch( titleChanged( taskId ) );
     }
     const deleteTask = ( taskId ) => {
-        store.dispatch( taskDeleted( taskId ) );
+        dispatch( taskDeleted( taskId ) );
     };
+
+    if ( isLoading ) {
+        return <h1>Loading...</h1>;
+    }
+    if ( error ) {
+        return <p>{error}</p>
+    }
 
     return (
         <>
@@ -31,7 +38,7 @@ const App = () => {
                     <li key={ el.id }>
                         <p>{ el.title }</p>
                         <p>{ `Completed: ${ el.completed }` }</p>
-                        <button onClick={ () => store.dispatch( completeTask( el.id ) ) }>Complete</button>
+                        <button onClick={ () => dispatch( completeTask( el.id ) ) }>Complete</button>
                         <button onClick={ () => changeTitle( el.id ) }>change title</button>
                         <button onClick={ () => deleteTask( el.id ) }>delete task</button>
                         <hr/>
@@ -45,7 +52,7 @@ const App = () => {
 const root = ReactDOM.createRoot( document.getElementById( 'root' ) );
 root.render(
     <React.StrictMode>
-        <Provider store={store}>
+        <Provider store={ store }>
             <App/>
         </Provider>
     </React.StrictMode>
