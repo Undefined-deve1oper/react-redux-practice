@@ -1,8 +1,17 @@
-import { createStore } from "redux";
+import { applyMiddleware, compose, createStore } from "redux";
 import taskReducer from "./task";
+import { logger } from "./middleware/logger";
+
+const middlewareEnhancer = applyMiddleware( logger );
 
 function configureStore() {
-    return createStore(taskReducer);
+    return createStore( taskReducer,
+        compose(
+            middlewareEnhancer,
+            window.__REDUX_DEVTOOLS_EXTENSION__ &&
+            window.__REDUX_DEVTOOLS_EXTENSION__()
+        )
+    );
 }
 
 export default configureStore;
