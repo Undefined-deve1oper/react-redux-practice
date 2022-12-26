@@ -7,9 +7,9 @@ import configureStore from "./store/store";
 const store = configureStore();
 
 const App = () => {
-    const state = useSelector( ( state ) => state.entities );
-    const isLoading = useSelector( ( state ) => state.isLoading );
-    const error = useSelector( ( state ) => state.error );
+    const state = useSelector( ( state ) => state.tasks.entities );
+    const isLoading = useSelector( ( state ) => state.tasks.isLoading );
+    const error = useSelector( ( state ) => state.errors.entities[0] );
     const dispatch = useDispatch();
 
     useEffect( () => {
